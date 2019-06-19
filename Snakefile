@@ -1,0 +1,6 @@
+rule all:
+    input:
+
+
+include: "rules/setup.smk"
+include: "rules/blast.smk"

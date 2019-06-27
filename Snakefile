@@ -3,8 +3,7 @@ configfile: "config.yml"
 
 
 rule all:
-    input:
-
+  input:
 
 include: "rules/setup.smk"
 include: "rules/blast.smk"

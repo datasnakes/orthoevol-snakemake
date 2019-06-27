@@ -2,12 +2,12 @@ from OrthoEvol.Orthologs.Blast import OrthoBlastN
 
 
 rule blastn:
+    message:
+        "Running blastn."
     input:
         acc=config['accessions_file']
-    log: 
-        "blastn.log"
     output:
-        path=config['project']
+        expand("{project}/data/{project}_building_time.csv", project=config['project'])
     run:
         blastn = OrthoBlastN(project=config['project'], method=config['method'],
                             save_data=config['save_data'], acc_file={input.acc},

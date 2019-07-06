@@ -2,7 +2,7 @@
 
 # Variables to be used across multiple rules
 email: "shutchins2@umc.edu"
-project: "ortho-test"
+project: "orthology"
 
 # Database Config
 database_name: "refseq_rna"

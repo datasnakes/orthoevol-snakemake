@@ -1,4 +1,4 @@
-
+# The main snakefile
 configfile: "config.yml"
 
 

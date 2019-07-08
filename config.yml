@@ -1,0 +1,22 @@
+# This configuration file should be edited to fit the user's needs.
+
+# Variables to be used across multiple rules
+email: "shutchins2@umc.edu"
+project: "orthology"
+
+# Database Config
+database_name: "refseq_rna"
+download_path: "/ddn/home5/r2295/GitRepo/orthoevol-snakemake/databases"
+use_v5_database: True
+
+# Blast Config
+accessions_file: "test.csv"
+method: 1
+save_data: True
+copy_from_package: False
+
+# GenBank Config
+
+# Alignment Config
+
+# Phylogenetics Config

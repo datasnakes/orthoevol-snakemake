@@ -4,10 +4,16 @@
 email: "shutchins2@umc.edu"
 project: "orthology"
 
-# Database Config
+# Blast Database Config
 database_name: "refseq_rna"
-download_path: "/ddn/home5/r2295/GitRepo/orthoevol-snakemake/databases"
 use_v5_database: True
+set_blastdb: False
+
+# Refseq Release Database Config
+driver: "sqlite3"
+collection_subset: "vertebrate_mammalian"
+seqtype: "rna"
+seqformat: "gbff"
 
 # Blast Config
 accessions_file: "test.csv"

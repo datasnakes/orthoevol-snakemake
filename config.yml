@@ -3,6 +3,7 @@
 # Variables to be used across multiple rules
 email: "shutchins2@umc.edu"
 project: "orthology"
+download_threads: 4
 
 # Blast Database Config
 database_name: "refseq_rna"

@@ -21,3 +21,4 @@ rule blastn:
                             save_data=config['save_data'], acc_file=input.acc,
                             copy_from_package=config['copy_from_package'])
         blastn.run()
+    

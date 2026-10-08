@@ -121,6 +121,11 @@ its child processes. BLAST reference databases require separate setup.
 
 Clone the git repository and change to directory.
 
+```bash
+git clone https://github.com/datasnakes/orthoevol-snakemake.git
+cd orthoevol-snakemake
+```
+
 #### Configure workflow
 
 Configure the workflow by editing `config/config.yaml`.

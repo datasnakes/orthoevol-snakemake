@@ -21,7 +21,7 @@ def blast_database_files(wildcards: Wildcards) -> list[str]:
 
 checkpoint download_blastdb:
     input:
-        support=workflow.source_path("scripts/download_support.py")
+        support=workflow.source_path("../scripts/download_support.py")
     output:
         database=directory("resources/blast/refseq_rna")
     params:
@@ -43,7 +43,7 @@ checkpoint download_blastdb:
 
 rule download_refseqrelease:
     input:
-        support=workflow.source_path("scripts/download_support.py")
+        support=workflow.source_path("../scripts/download_support.py")
     output:
         release=directory("resources/refseq/{subset}/{seqtype}.{seqformat}")
     wildcard_constraints:

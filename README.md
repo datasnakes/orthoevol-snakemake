@@ -19,6 +19,7 @@ workflow/
         database_setup.smk
         blast.smk
 test.csv
+environment.yml
 pyproject.toml
 uv.lock
 ```
@@ -46,33 +47,25 @@ encourages per-rule Conda environments and supports containers and HPC
 environment modules. It recommends a Conda or container alternative when using
 site-specific modules.
 
-This repository uses `uv` by project preference for Python dependencies. This
-is separate from Snakemake's per-rule software deployment. On a setup host with
-network access, prepare the repository-local environment with:
-
-```bash
-uv sync --locked --no-dev
-```
-
-For the optional Slurm executor plugin, use:
-
-```bash
-uv sync --locked --no-dev --extra slurm
-```
+For Linux/HPC, `environment.yml` defines the launcher environment with Python
+3.12, Snakemake 9.27.0, and Slurm executor plugin 2.8.0. Miniforge must provide
+`conda` in its base environment for Snakemake's Conda integration. Site-specific
+Slurm account, partition, and submission limits belong in a site profile.
 
 Analysis dependencies belong in `workflow/envs/orthoevol.yaml`. The download
 and BLAST rules use this environment through `conda:` and `script:` directives.
 It supplies BLAST+ and the pinned OrthoEvolution package separately from the
 launcher. Run with `--software-deployment-method conda` to enable deployment.
 
-For Linux HPC use, create the environment on the target system rather than
-copying a macOS `.venv`. Ensure that the environment, its underlying Python
-interpreter, and external tools are accessible on compute nodes. Prepare
-dependencies before submission and invoke `.venv/bin/snakemake` directly during
-execution to avoid implicit package installation. Use site-supported modules
-or existing tools for BLAST+ and verify their availability inside a compute
-allocation. Database retrieval and taxonomy preparation have separate data
-and network requirements.
+The existing `pyproject.toml` and `uv.lock` remain available for local Python
+development with `uv sync --locked`. On the tested HPC login node, glibc 2.17
+could not use the locked greenlet wheel, and compilation failed with the system
+compiler. Use the Mamba setup below there. Do not use `.venv/bin/snakemake` or
+`uv sync` to manage the Conda launcher environment.
+
+The Conda specifications pin selected versions but are not complete dependency
+locks. The launcher with the Slurm plugin and the analysis environment still
+need installation and execution validation on Linux/glibc 2.17.
 
 ### Install BLAST+ on Linux
 
@@ -127,33 +120,70 @@ git clone https://github.com/datasnakes/orthoevol-snakemake.git
 cd orthoevol-snakemake
 ```
 
+#### Prepare the Linux/HPC environment
+
+These instructions assume Linux with Bash and an existing Miniforge/Mamba
+installation. Run from the repository root on a node with network access where
+your site's policy permits software installation. If either prerequisite is
+missing, stop and follow your site's Miniforge setup instructions.
+
+```bash
+command -v mamba
+command -v conda
+mamba env create --dry-run -f environment.yml
+mamba env create -f environment.yml
+conda activate orthoevol-snakemake
+snakemake --version
+```
+
+If an environment with this name already exists from the earlier manual setup,
+use `mamba env update -n orthoevol-snakemake -f environment.yml` instead of the
+create command. Stop on a failed solve or installation.
+
+Keep the checkout, launcher environment, and Snakemake's `.snakemake/conda/`
+environments on storage visible to compute nodes. Activate the launcher in each
+batch job and run from the repository root. Create rule environments before
+submission; their installation may require network access. BLAST databases and
+taxonomy data require separate preparation.
+
 #### Configure workflow
 
 Configure the workflow by editing `config/config.yaml`.
 
-#### Execute workflow
+#### Validate the Linux setup
 
-The following commands are intended for validation after the rule integration
-is complete. The current rules import and initialize package code while loading,
-so even a dry run is not yet established as side-effect-free.
+After activating the launcher, inspect the workflow and its planned jobs:
 
-##### Inspect the execution plan
-
-```console
-.venv/bin/snakemake --dry-run --cores 1
+```bash
+snakemake --lint
+snakemake --dry-run --cores 1
+snakemake download_blastdb --dry-run --cores 1
 ```
 
-##### Execute the workflow locally via
+Lint findings describe remaining workflow work. A successful dry run checks job
+planning, not execution correctness. The BLAST rule does not yet declare its
+database dependency, and its output contract still needs end-to-end validation.
 
-```console
-.venv/bin/snakemake --cores 1
+Prepare the analysis environment without executing BLAST or database downloads:
+
+```bash
+snakemake --cores 1 --software-deployment-method conda --conda-create-envs-only
 ```
 
-##### Run a specific rule
+This downloads software and installs the rule environment. It does not retrieve
+reference databases. Stop and report the solver or pip error if installation
+fails. Successful launcher installation does not guarantee that the pinned
+OrthoEvolution dependencies support this Linux system.
 
-```console
-.venv/bin/snakemake blastn --cores 1
+#### Execute after integration validation
+
+Once database dependencies and expected outputs have been validated on small
+representative data, execute in a compute allocation:
+
+```bash
+snakemake --cores 1 --software-deployment-method conda
 ```
 
-Do not launch production runs until the package adapters and representative
-integration tests pass.
+For scheduler submission, supply your configured site profile with `--profile`.
+Installing the Slurm plugin alone does not configure cluster execution. Do not
+launch production runs until representative integration validation passes.

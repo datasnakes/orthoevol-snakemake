@@ -59,6 +59,40 @@ or existing tools for BLAST+ and verify their availability inside a compute
 allocation. Database retrieval and taxonomy preparation have separate data
 and network requirements.
 
+### Install BLAST+ on Linux
+
+On an HPC cluster, prefer the site's BLAST+ module when available. Use the
+module name and version documented by your site, then verify `blastn -version`
+and `blastdbcmd -version` inside a compute allocation.
+
+If no suitable module is available, the following installs BLAST+ without
+administrator access on **Linux x86_64**. Version 2.16.0 matches the draft
+workflow environment. This follows [NCBI's Unix installation instructions](https://www.ncbi.nlm.nih.gov/books/NBK52640/)
+and requires `curl`, `tar`, and network access. ARM systems require a different
+build.
+
+```bash
+blast_version="2.16.0"
+blast_archive="ncbi-blast-${blast_version}+-x64-linux.tar.gz"
+blast_url="https://ftp.ncbi.nlm.nih.gov/blast/executables/blast+"
+
+mkdir -p "$HOME/.local/opt"
+curl --fail --location \
+    "${blast_url}/${blast_version}/${blast_archive}" \
+    --output "$HOME/.local/opt/${blast_archive}"
+
+tar -xzf "$HOME/.local/opt/${blast_archive}" -C "$HOME/.local/opt"
+export PATH="$HOME/.local/opt/ncbi-blast-${blast_version}+/bin:$PATH"
+
+blastn -version
+blastdbcmd -version
+```
+
+The installation directory must be visible to compute nodes. Repeat the module
+load or the version assignment and `PATH` export in each batch job before
+running the workflow. The export above applies only to the current shell and
+its child processes. BLAST reference databases require separate setup.
+
 ## Authors
 
 * [Shaurita Hutchins](https://github.com/sdhutchins)

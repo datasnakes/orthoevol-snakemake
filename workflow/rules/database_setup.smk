@@ -1,6 +1,6 @@
 import json
 
-from snakemake.io import Wildcards
+from snakemake.iocontainers import Wildcards
 
 
 def blast_database_files(wildcards: Wildcards) -> list[str]:

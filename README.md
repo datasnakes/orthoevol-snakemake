@@ -1,6 +1,12 @@
 # orthoevol-snakemake
 
-A snakemake workflow for the [OrthoEvol](https://github.com/datasnakes/OrthoEvolution) python package.
+A Snakemake workflow for the [OrthoEvol](https://github.com/datasnakes/OrthoEvolution)
+Python package.
+
+The workflow is under development. Its default target is incomplete, and the
+existing rules still need integration with the pinned OrthoEvolution API.
+The directory layout and Python dependency lock do not establish execution
+correctness.
 
 ## Repository layout
 
@@ -21,6 +27,15 @@ This follows Snakemake's [recommended workflow structure](https://snakemake.read
 Run commands from the repository root. Snakemake discovers `workflow/Snakefile`
 automatically. Rule includes are relative to that Snakefile, while configuration
 and data paths are relative to the working directory.
+
+As the integration proceeds, Python adapters belong in `workflow/scripts/`,
+rule environments in `workflow/envs/`, schemas in `workflow/schemas/`, and tests
+in `.tests/`. Workflow defaults belong in `workflow/profiles/default/`; users
+select their site execution profile separately with `--profile`.
+Generated analysis outputs should go under `results/` and downloaded reference
+data under `resources/`. The existing rules' output paths still need migration.
+The existing `test.csv` input remains at the root until the package adapter's
+accession-path handling is updated.
 
 ## Software environments
 

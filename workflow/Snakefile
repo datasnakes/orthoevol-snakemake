@@ -1,5 +1,10 @@
-# The main snakefile
+from pathlib import Path
+
+from snakemake.utils import validate
+
 configfile: "config/config.yaml"
+
+validate(config, "schemas/config.schema.yaml")
 
 
 rule all:

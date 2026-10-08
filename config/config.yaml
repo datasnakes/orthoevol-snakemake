@@ -1,29 +1,32 @@
-# This configuration file should be edited to fit the user's needs.
-
-# Variables to be used across multiple rules
-email: "shutchins2@umc.edu"
-project: "orthology"
-download_threads: 4
-
-# Blast Database Config
-database_name: "refseq_rna"
-use_v5_database: True
-set_blastdb: False
-
-# Refseq Release Database Config
-driver: "sqlite3"
-collection_subset: "vertebrate_mammalian"
-seqtype: "rna"
-seqformat: "gbff"
-
-# Blast Config
-accessions_file: "test.csv"
+project: orthology
+email: researcher@example.org
+accessions_file: test.csv
 method: 1
-save_data: True
-copy_from_package: False
+copy_from_package: false
+save_data: true
 
-# GenBank Config
+# A full RefSeq RNA download is large. Use an existing site database when possible.
+database:
+  mode: download
+  directory: resources/blast/refseq_rna
+  files: []
+  download_workers: 1
 
-# Alignment Config
+# Optional target, not a dependency of BLAST.
+refseq:
+  collection_subset: vertebrate_mammalian
+  seqtype: rna
+  seqformat: gbff
 
-# Phylogenetics Config
+# Provisional limits for development, not estimates for a full NCBI database.
+# Set site- and data-specific values before submission, then revise from accounting.
+resources:
+  download_blastdb:
+    mem_mb: 1024
+    runtime: 60
+  download_refseqrelease:
+    mem_mb: 1024
+    runtime: 60
+  blastn:
+    mem_mb: 1024
+    runtime: 15

@@ -1,0 +1,85 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+type: object
+additionalProperties: false
+required: [project, email, accessions_file, method, copy_from_package, database, refseq, save_data, resources]
+properties:
+  project:
+    type: string
+    pattern: '^[A-Za-z][A-Za-z0-9_-]*$'
+  email:
+    type: string
+    minLength: 3
+  accessions_file:
+    type: string
+    minLength: 1
+  method:
+    type: integer
+  copy_from_package:
+    type: boolean
+  save_data:
+    type: boolean
+  database:
+    type: object
+    additionalProperties: false
+    required: [mode, directory, files, download_workers]
+    properties:
+      mode:
+        enum: [download, existing]
+      directory:
+        type: string
+        minLength: 1
+      files:
+        type: array
+        uniqueItems: true
+        items:
+          type: string
+          pattern: '^[A-Za-z0-9_.-]+$'
+          not:
+            enum: ['.', '..']
+      download_workers:
+        type: integer
+        minimum: 1
+    allOf:
+      - if:
+          properties:
+            mode:
+              const: existing
+        then:
+          properties:
+            files:
+              minItems: 1
+  refseq:
+    type: object
+    additionalProperties: false
+    required: [collection_subset, seqtype, seqformat]
+    properties:
+      collection_subset:
+        type: string
+        pattern: '^[a-z_]+$'
+      seqtype:
+        enum: [rna, genomic, protein]
+      seqformat:
+        enum: [gbff, fna, faa, gpff]
+  resources:
+    type: object
+    additionalProperties: false
+    required: [download_blastdb, download_refseqrelease, blastn]
+    properties:
+      download_blastdb:
+        $ref: '#/$defs/resources'
+      download_refseqrelease:
+        $ref: '#/$defs/resources'
+      blastn:
+        $ref: '#/$defs/resources'
+$defs:
+  resources:
+    type: object
+    additionalProperties: false
+    required: [mem_mb, runtime]
+    properties:
+      mem_mb:
+        type: integer
+        minimum: 1
+      runtime:
+        type: integer
+        minimum: 1

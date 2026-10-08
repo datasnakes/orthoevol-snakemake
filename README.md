@@ -60,10 +60,10 @@ For the optional Slurm executor plugin, use:
 uv sync --locked --no-dev --extra slurm
 ```
 
-The lock pins Python dependencies and an inspected OrthoEvolution Git revision.
-It does not install BLAST+ or provide per-rule environments. Those deployment
-definitions remain part of the planned integration. Do not assume that
-installing Python dependencies makes the workflow ready to execute.
+Analysis dependencies belong in `workflow/envs/orthoevol.yaml`. The download
+and BLAST rules use this environment through `conda:` and `script:` directives.
+It supplies BLAST+ and the pinned OrthoEvolution package separately from the
+launcher. Run with `--software-deployment-method conda` to enable deployment.
 
 For Linux HPC use, create the environment on the target system rather than
 copying a macOS `.venv`. Ensure that the environment, its underlying Python
@@ -76,7 +76,8 @@ and network requirements.
 
 ### Install BLAST+ on Linux
 
-On an HPC cluster, prefer the site's BLAST+ module when available. Use the
+The Conda rule environment supplies BLAST+ for managed workflow jobs. For
+standalone BLAST use outside those jobs, prefer the site's BLAST+ module when available. Use the
 module name and version documented by your site, then verify `blastn -version`
 and `blastdbcmd -version` inside a compute allocation.
 

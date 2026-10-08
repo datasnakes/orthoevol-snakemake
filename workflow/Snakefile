@@ -6,9 +6,10 @@ configfile: "config/config.yaml"
 
 validate(config, "schemas/config.schema.yaml")
 
-
-rule all:
-  input:
-
 include: "rules/database_setup.smk"
 include: "rules/blast.smk"
+
+rule all:
+    input:
+        rules.blastn.output
+    default_target: True

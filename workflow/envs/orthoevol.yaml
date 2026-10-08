@@ -1,0 +1,11 @@
+channels:
+  - conda-forge
+  - bioconda
+  - nodefaults
+dependencies:
+  - python=3.12
+  - pip=25.0
+  - git=2.48
+  - blast=2.16.0
+  - pip:
+      - OrthoEvol @ git+https://github.com/datasnakes/OrthoEvolution.git@273ef54f9043d1fdeac6652497c58dfbc20a01dd

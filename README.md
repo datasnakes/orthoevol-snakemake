@@ -2,6 +2,43 @@
 
 A snakemake workflow for the [OrthoEvol](https://github.com/datasnakes/OrthoEvolution) python package.
 
+## Software environments
+
+Snakemake's [installation guide](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html)
+currently recommends Pixi and also documents Conda/Mamba and pip installation.
+Its [software deployment guide](https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html)
+encourages per-rule Conda environments and supports containers and HPC
+environment modules. It recommends a Conda or container alternative when using
+site-specific modules.
+
+This repository uses `uv` by project preference for Python dependencies. This
+is separate from Snakemake's per-rule software deployment. On a setup host with
+network access, prepare the repository-local environment with:
+
+```bash
+uv sync --locked --no-dev
+```
+
+For the optional Slurm executor plugin, use:
+
+```bash
+uv sync --locked --no-dev --extra slurm
+```
+
+The lock pins Python dependencies and an inspected OrthoEvolution Git revision.
+It does not install BLAST+ or provide per-rule environments. Those deployment
+definitions remain part of the planned integration. Do not assume that
+installing Python dependencies makes the workflow ready to execute.
+
+For Linux HPC use, create the environment on the target system rather than
+copying a macOS `.venv`. Ensure that the environment, its underlying Python
+interpreter, and external tools are accessible on compute nodes. Prepare
+dependencies before submission and invoke `.venv/bin/snakemake` directly during
+execution to avoid implicit package installation. Use site-supported modules
+or existing tools for BLAST+ and verify their availability inside a compute
+allocation. Database retrieval and taxonomy preparation have separate data
+and network requirements.
+
 ## Authors
 
 * [Shaurita Hutchins](https://github.com/sdhutchins)
@@ -21,23 +58,27 @@ Configure the workflow according to your needs via editing the file `config.yaml
 
 #### Execute workflow
 
-##### Test your configuration by performing a dry-run via
+The following commands are intended for validation after the rule integration
+is complete. The current rules import and initialize package code while loading,
+so even a dry run is not yet established as side-effect-free.
+
+##### Inspect the execution plan
 
 ```console
-[username@hostname]$ snakemake --use-conda -n
+.venv/bin/snakemake --dry-run --cores 1
 ```
 
 ##### Execute the workflow locally via
 
 ```console
-[username@hostname]$ snakemake --use-conda --cores $N
+.venv/bin/snakemake --cores 1
 ```
 
 ##### Run a specific rule
 
 ```console
-[username@hostname]$ snakemake blastn --use-conda --cores $N
+.venv/bin/snakemake blastn --cores 1
 ```
 
-# Investigate results
-
+Do not launch production runs until the package adapters and representative
+integration tests pass.

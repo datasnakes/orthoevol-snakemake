@@ -1,0 +1,25 @@
+[project]
+name = "orthoevol-snakemake"
+version = "0.1.0"
+description = "A Snakemake workflow using the OrthoEvolution Python package."
+requires-python = ">=3.11,<3.15"
+dependencies = [
+    "OrthoEvol",
+    "snakemake==9.27.0",
+]
+
+[project.optional-dependencies]
+slurm = ["snakemake-executor-plugin-slurm"]
+
+[dependency-groups]
+dev = ["pytest>=9,<10"]
+
+[tool.uv]
+package = false
+
+[tool.uv.sources]
+# Pin the API inspected for this workflow rather than following a moving branch.
+OrthoEvol = { git = "https://github.com/datasnakes/OrthoEvolution.git", rev = "273ef54f9043d1fdeac6652497c58dfbc20a01dd" }
+
+[tool.pytest.ini_options]
+testpaths = [".tests"]

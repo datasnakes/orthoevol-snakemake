@@ -2,6 +2,26 @@
 
 A snakemake workflow for the [OrthoEvol](https://github.com/datasnakes/OrthoEvolution) python package.
 
+## Repository layout
+
+```text
+config/
+    config.yaml
+workflow/
+    Snakefile
+    rules/
+        database_setup.smk
+        blast.smk
+test.csv
+pyproject.toml
+uv.lock
+```
+
+This follows Snakemake's [recommended workflow structure](https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html#distribution-and-reproducibility).
+Run commands from the repository root. Snakemake discovers `workflow/Snakefile`
+automatically. Rule includes are relative to that Snakefile, while configuration
+and data paths are relative to the working directory.
+
 ## Software environments
 
 Snakemake's [installation guide](https://snakemake.readthedocs.io/en/stable/getting_started/installation.html)
@@ -54,7 +74,7 @@ Clone the git repository and change to directory.
 
 #### Configure workflow
 
-Configure the workflow according to your needs via editing the file `config.yaml`.
+Configure the workflow by editing `config/config.yaml`.
 
 #### Execute workflow
 

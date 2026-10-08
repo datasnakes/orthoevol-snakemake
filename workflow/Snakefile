@@ -1,5 +1,5 @@
 # The main snakefile
-configfile: "config.yml"
+configfile: "config/config.yaml"
 
 
 rule all:

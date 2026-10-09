@@ -1,16 +1,16 @@
 #!/bin/bash
-#SBATCH --job-name=orthoevol-download
+#SBATCH --job-name=orthoevol-test
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=2G
-#SBATCH --output=logs/download-blastdb-%j.log
+#SBATCH --output=logs/test-blast-%j.log
 
 set -euo pipefail
 
-# One CPU matches the configured single download worker; no array is needed.
+# One CPU matches the serial BLAST test; this single query needs no array.
 # Memory is provisional: 1 GB for the rule plus room for the workflow process.
-# Supply partition and walltime at submission based on transfer size and speed.
+# Supply a CPU partition and provisional test walltime at submission.
 cd "${SLURM_SUBMIT_DIR:?Submit from the repository root}"
 
 export PYTHONNOUSERSITE=1
@@ -22,8 +22,9 @@ conda activate orthoevol-snakemake
 
 command -v snakemake
 
-snakemake download_blastdb \
+snakemake all \
     --executor local \
     --cores "${SLURM_CPUS_PER_TASK}" \
     --software-deployment-method conda \
-    --rerun-incomplete
+    --rerun-incomplete \
+    --config project=test_blast accessions_file=test_blast.csv

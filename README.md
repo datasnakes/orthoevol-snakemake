@@ -192,6 +192,43 @@ If creation fails again, report the first failing package and its build or
 solver error. The revised dependency set still requires validation on Linux
 with glibc 2.17.
 
+#### Download the BLAST database in a batch job
+
+After creating the rule environment, submit from the repository root. Set your
+email in `config/config.yaml` first. This downloads and extracts the full
+RefSeq RNA database, including taxonomy files, into `resources/blast/refseq_rna/`.
+Confirm sufficient storage and network access before submission. Do not submit
+a second download while another process is using that output directory.
+
+Replace `YOUR_PARTITION` and `HH:MM:SS` below with an eligible Cheaha partition
+and a walltime based on the download size, observed transfer rate, and extraction
+time. The workflow's current 60-minute resource value is provisional, not a
+measured estimate for the full download.
+
+```bash
+sbatch --partition=YOUR_PARTITION --time=HH:MM:SS scripts/download_blastdb.sbatch
+```
+
+Slurm returns a job ID and runs the job independently of your terminal session.
+The script loads `miniforge/conda`, activates the launcher environment, and
+runs Snakemake locally within one Slurm allocation, without submitting child
+jobs. One CPU matches the current single download worker. The 2 GB memory
+request is provisional, allowing 1 GB for the rule plus workflow overhead.
+
+Monitor the job with `squeue -u "$USER"`. Scheduler output goes to
+`download-blastdb-JOB_ID.log` in the repository root; package output goes to
+`logs/download_blastdb.log`. After completion, replace `JOB_ID` below and inspect
+the exit status, elapsed time, and memory use:
+
+```bash
+seff JOB_ID
+sacct -j JOB_ID --format=JobID,State,ExitCode,Elapsed,AllocCPUS,MaxRSS
+```
+
+Use successful runs to refine memory and walltime requests. Diagnose failed
+transfers separately from resource sizing. Download completion does not yet
+connect the database to the BLAST rule. See [Cheaha's batch submission guidance](https://docs.rc.uab.edu/cheaha/slurm/submitting_jobs/).
+
 #### Execute after integration validation
 
 Once database dependencies and expected outputs have been validated on small

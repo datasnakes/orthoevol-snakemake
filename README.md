@@ -130,6 +130,7 @@ missing, stop and follow your site's Miniforge setup instructions.
 ```bash
 command -v mamba
 command -v conda
+export CONDA_CHANNEL_PRIORITY=strict
 mamba env create --dry-run -f environment.yml
 mamba env create -f environment.yml
 conda activate orthoevol-snakemake
@@ -167,6 +168,7 @@ database dependency, and its output contract still needs end-to-end validation.
 Prepare the analysis environment without executing BLAST or database downloads:
 
 ```bash
+export CONDA_CHANNEL_PRIORITY=strict
 snakemake --cores 1 --software-deployment-method conda --conda-create-envs-only
 ```
 
@@ -179,6 +181,8 @@ The rule environment installs NumPy, SciPy, pandas, Matplotlib, Biopython, and
 other compiled dependencies through Conda before pip installs the pinned
 OrthoEvolution revision. Their constraints allow the solver to select compatible
 builds for the host; this specification is not a complete dependency lock.
+Strict channel priority applies to this shell and its child processes. Repeat
+the export in any batch job that creates environments.
 
 If an earlier attempt failed while pip built NumPy from source, first obtain
 the revised `workflow/envs/orthoevol.yaml`, then rerun the environment-creation

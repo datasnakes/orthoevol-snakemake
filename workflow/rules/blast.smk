@@ -7,7 +7,8 @@ rule blastn:
     message:
         "Running blastn."
     input:
-        acc=ACC
+        acc=ACC,
+        database=blast_database_files
     output:
         expand("{project}/data/{project}_TIME.csv", project=config['project']),
         expand("{project}/index/" + ACC, project=config['project']),
@@ -18,7 +19,10 @@ rule blastn:
         project=config['project'],
         method=config['method'],
         save_data=config['save_data'],
-        copy_from_package=config['copy_from_package']
+        copy_from_package=config['copy_from_package'],
+        database_directory=lambda wildcards, input: str(
+            Path(input.database[0]).parent.resolve()
+        )
     log:
         "logs/blastn.log"
     conda:

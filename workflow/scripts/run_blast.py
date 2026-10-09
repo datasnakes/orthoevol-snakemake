@@ -1,5 +1,6 @@
 """Run OrthoEvolution inside the BLAST rule's software environment."""
 
+import os
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 from typing import Any
@@ -8,7 +9,9 @@ from OrthoEvol.Orthologs.Blast import OrthoBlastN
 
 
 def main(job: Any) -> None:
-    """Preserve the existing package invocation and propagate failures."""
+    """Run against the declared database and propagate package failures."""
+    # BLAST subprocesses inherit this path even if the package changes directories.
+    os.environ["BLASTDB"] = job.params.database_directory
     with Path(job.log[0]).open("w") as log_file:
         with redirect_stdout(log_file), redirect_stderr(log_file):
             blast = OrthoBlastN(

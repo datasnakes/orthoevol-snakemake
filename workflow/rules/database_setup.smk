@@ -10,8 +10,8 @@ def blast_database_files(wildcards: Wildcards) -> list[str]:
             str(Path(config["database"]["directory"]) / name)
             for name in config["database"]["files"]
         ]
-    database_directory = Path(checkpoints.download_blastdb.get().output.database)
-    manifest_path = database_directory / "workflow-manifest.json"
+    manifest_path = Path(checkpoints.download_blastdb.get().output.manifest)
+    database_directory = manifest_path.parent
     with manifest_path.open() as manifest_file:
         manifest = json.load(manifest_file)
     return [str(manifest_path)] + [
@@ -23,7 +23,8 @@ checkpoint download_blastdb:
     input:
         support=workflow.source_path("../scripts/download_support.py")
     output:
-        database=directory("resources/blast/refseq_rna")
+        # Preserve archives and extraction markers when retrying an interrupted job.
+        manifest="resources/blast/refseq_rna/workflow-manifest.json"
     params:
         email=config["email"],
         workers=config["database"]["download_workers"]

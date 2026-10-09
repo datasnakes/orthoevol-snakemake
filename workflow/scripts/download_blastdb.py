@@ -1,4 +1,4 @@
-"""Download the package's local BLAST database into a rule-owned directory."""
+"""Download the local BLAST database and record its completed manifest."""
 
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
@@ -32,7 +32,7 @@ def main(job: Any) -> None:
     with Path(job.log[0]).open("w") as log_file:
         with redirect_stdout(log_file), redirect_stderr(log_file):
             download_database(
-                Path(job.output.database), job.params.email, job.params.workers
+                Path(job.output.manifest).parent, job.params.email, job.params.workers
             )
 
 

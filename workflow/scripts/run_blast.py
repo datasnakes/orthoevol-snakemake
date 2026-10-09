@@ -20,6 +20,7 @@ def main(job: Any) -> None:
                 save_data=job.params.save_data,
                 acc_file=job.input.acc,
                 copy_from_package=job.params.copy_from_package,
+                auto_start=True,
             )
             blast.run()
 

@@ -21,7 +21,9 @@ eval "$(conda shell.bash hook)"
 conda activate orthoevol-snakemake
 
 command -v snakemake
+
 snakemake download_blastdb \
     --executor local \
     --cores "${SLURM_CPUS_PER_TASK}" \
-    --software-deployment-method conda
+    --software-deployment-method conda \
+    --rerun-incomplete

@@ -23,6 +23,10 @@ rule blastn:
         database_directory=lambda wildcards, input: str(
             Path(input.database[0]).parent.resolve()
         )
+    threads: 1
+    resources:
+        mem_mb=config['resources']['blastn']['mem_mb'],
+        runtime=config['resources']['blastn']['runtime']
     log:
         "logs/blastn.log"
     conda:

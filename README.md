@@ -175,6 +175,19 @@ reference databases. Stop and report the solver or pip error if installation
 fails. Successful launcher installation does not guarantee that the pinned
 OrthoEvolution dependencies support this Linux system.
 
+The rule environment installs NumPy, SciPy, pandas, Matplotlib, Biopython, and
+other compiled dependencies through Conda before pip installs the pinned
+OrthoEvolution revision. Their constraints allow the solver to select compatible
+builds for the host; this specification is not a complete dependency lock.
+
+If an earlier attempt failed while pip built NumPy from source, first obtain
+the revised `workflow/envs/orthoevol.yaml`, then rerun the environment-creation
+command above. Snakemake uses the changed environment definition to select a
+new environment directory. There is no need to delete all of `.snakemake/`.
+If creation fails again, report the first failing package and its build or
+solver error. The revised dependency set still requires validation on Linux
+with glibc 2.17.
+
 #### Execute after integration validation
 
 Once database dependencies and expected outputs have been validated on small

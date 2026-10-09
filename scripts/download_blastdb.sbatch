@@ -4,7 +4,7 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=2G
-#SBATCH --output=download-blastdb-%j.log
+#SBATCH --output=logs/download-blastdb-%j.log
 
 set -euo pipefail
 
@@ -17,6 +17,7 @@ export PYTHONNOUSERSITE=1
 export CONDA_CHANNEL_PRIORITY=strict
 
 module load miniforge/conda
+eval "$(conda shell.bash hook)"
 conda activate orthoevol-snakemake
 
 command -v snakemake

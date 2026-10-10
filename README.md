@@ -144,7 +144,7 @@ Keep the checkout, launcher environment, and Snakemake's `.snakemake/conda/`
 environments on storage visible to compute nodes. Activate the launcher in each
 batch job and run from the repository root. Create rule environments before
 submission; their installation may require network access. BLAST databases and
-taxonomy data require separate preparation.
+taxonomy preparation is an explicit workflow dependency.
 
 #### Configure workflow
 
@@ -161,8 +161,8 @@ snakemake download_blastdb --dry-run --cores 1
 ```
 
 Lint findings describe remaining workflow work. A successful dry run checks job
-planning, not execution correctness. The BLAST rule does not yet declare its
-database dependency, and its output contract still needs end-to-end validation.
+planning, not execution correctness. The BLAST rule declares its database and
+taxonomy inputs; its outputs still need end-to-end validation on Cheaha.
 
 Prepare the analysis environment without executing BLAST or database downloads:
 

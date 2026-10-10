@@ -7,7 +7,8 @@ rule blastn:
         "Running blastn."
     input:
         acc=str(ACC),
-        database=blast_database_files
+        database=blast_database_files,
+        taxonomy=rules.prepare_taxonomy.output.database
     output:
         timings=f"{PROJECT}/data/{PROJECT}_TIME.csv",
         input_accessions=f"{PROJECT}/index/{ACC.name}",

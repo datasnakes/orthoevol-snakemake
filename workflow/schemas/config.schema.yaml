@@ -1,7 +1,7 @@
 $schema: "https://json-schema.org/draft/2020-12/schema"
 type: object
 additionalProperties: false
-required: [project, email, accessions_file, method, copy_from_package, ref_species, database, refseq, save_data, resources]
+required: [project, email, accessions_file, method, copy_from_package, ref_species, taxonomy_db, database, refseq, save_data, resources]
 properties:
   project:
     type: string
@@ -19,6 +19,9 @@ properties:
   save_data:
     const: true
   ref_species:
+    type: string
+    minLength: 1
+  taxonomy_db:
     type: string
     minLength: 1
   database:
@@ -79,8 +82,10 @@ properties:
   resources:
     type: object
     additionalProperties: false
-    required: [download_blastdb, download_refseqrelease, blastn]
+    required: [prepare_taxonomy, download_blastdb, download_refseqrelease, blastn]
     properties:
+      prepare_taxonomy:
+        $ref: '#/$defs/resources'
       download_blastdb:
         $ref: '#/$defs/resources'
       download_refseqrelease:

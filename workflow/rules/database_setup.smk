@@ -75,3 +75,21 @@ rule refseq:
             seqtype=config["refseq"]["seqtype"],
             seqformat=config["refseq"]["seqformat"],
         )
+
+
+rule prepare_taxonomy:
+    output:
+        database=config["taxonomy_db"],
+        traversal=config["taxonomy_db"] + ".traverse.pkl"
+    threads: 1
+    resources:
+        mem_mb=config["resources"]["prepare_taxonomy"]["mem_mb"],
+        runtime=config["resources"]["prepare_taxonomy"]["runtime"]
+    log:
+        "logs/prepare_taxonomy.log"
+    benchmark:
+        "benchmarks/prepare_taxonomy.tsv"
+    conda:
+        "../envs/orthoevol.yaml"
+    script:
+        "../scripts/prepare_taxonomy.py"

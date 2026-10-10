@@ -1,32 +1,31 @@
-## Run OrthoBlastN ##
-ACC = config['accessions_file']
+ACC = Path(config["accessions_file"])
+PROJECT = config["project"]
 
-NAME, EXT = ACC.split('.')
 
 rule blastn:
     message:
         "Running blastn."
     input:
-        acc=ACC,
+        acc=str(ACC),
         database=blast_database_files
     output:
-        expand("{project}/data/{project}_TIME.csv", project=config['project']),
-        expand("{project}/index/" + ACC, project=config['project']),
-        expand("{project}/index/" + NAME + ".sqlite", project=config['project']),
-        expand("{project}/data/{project}_MAF.csv", project=config['project']),
-        expand("{project}/data/{project}_postblastanalysis.xlsx", project=config['project'])
+        timings=f"{PROJECT}/data/{PROJECT}_TIME.csv",
+        input_accessions=f"{PROJECT}/index/{ACC.name}",
+        accession_database=f"{PROJECT}/index/{ACC.stem}.sqlite",
+        accessions=f"{PROJECT}/data/{PROJECT}_MAF.csv",
+        report=f"{PROJECT}/data/{PROJECT}_postblastanalysis.xlsx"
     params:
-        project=config['project'],
-        method=config['method'],
-        save_data=config['save_data'],
-        copy_from_package=config['copy_from_package'],
+        project=PROJECT,
+        method=config["method"],
+        save_data=config["save_data"],
+        copy_from_package=config["copy_from_package"],
         database_directory=lambda wildcards, input: str(
             Path(input.database[0]).parent.resolve()
         )
     threads: 1
     resources:
-        mem_mb=config['resources']['blastn']['mem_mb'],
-        runtime=config['resources']['blastn']['runtime']
+        mem_mb=config["resources"]["blastn"]["mem_mb"],
+        runtime=config["resources"]["blastn"]["runtime"]
     log:
         "logs/blastn.log"
     conda:

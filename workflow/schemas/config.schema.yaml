@@ -17,7 +17,7 @@ properties:
   copy_from_package:
     type: boolean
   save_data:
-    type: boolean
+    const: true
   database:
     type: object
     additionalProperties: false

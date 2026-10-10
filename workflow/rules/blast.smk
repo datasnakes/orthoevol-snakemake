@@ -12,8 +12,7 @@ rule blastn:
         timings=f"{PROJECT}/data/{PROJECT}_TIME.csv",
         input_accessions=f"{PROJECT}/index/{ACC.name}",
         accession_database=f"{PROJECT}/index/{ACC.stem}.sqlite",
-        accessions=f"{PROJECT}/data/{PROJECT}_MAF.csv",
-        report=f"{PROJECT}/data/{PROJECT}_postblastanalysis.xlsx"
+        accessions=f"{PROJECT}/data/{PROJECT}_MAF.csv"
     params:
         project=PROJECT,
         method=config["method"],

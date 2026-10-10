@@ -250,6 +250,12 @@ users, `uv lock --upgrade-package OrthoEvol` followed by `uv sync --locked`
 refreshes the branch revision after it is pushed. Until then, the lockfile
 records the older GitHub branch head, which lacks the new taxonomy API.
 
+Check `test_blast_branch/data/test_blast_branch_MAF.csv` and the timing CSV.
+A missing mouse hit is a valid result; verify the human reference accession is
+preserved. The Excel report is optional. Repeat the same command and confirm
+Snakemake reports nothing to do. Use a new project name if inputs, database, or
+search settings change, because package XML cache invalidation remains pending.
+
 Snakemake hashes environment definitions, not the current GitHub branch head.
 Later pushes do not refresh an already-created Conda environment. Before each
 subsequent branch test, replace `@snakemake-fixes` in the rule YAML with the exact

@@ -27,4 +27,4 @@ snakemake all \
     --cores "${SLURM_CPUS_PER_TASK}" \
     --software-deployment-method conda \
     --rerun-incomplete \
-    --config project=test_blast accessions_file=test_blast.csv
+    --config project=test_blast_branch accessions_file=test_blast.csv

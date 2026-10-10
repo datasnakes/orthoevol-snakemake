@@ -191,42 +191,37 @@ If creation fails again, report the first failing package and its build or
 solver error. The revised dependency set still requires validation on Linux
 with glibc 2.17.
 
-#### Download the BLAST database in a batch job
+#### Run the branch test in a batch job
 
-After creating the rule environment, submit from the repository root. Set your
-email in `config/config.yaml` first. This downloads and extracts the full
-RefSeq RNA database, including taxonomy files, into `resources/blast/refseq_rna/`.
-Confirm sufficient storage and network access before submission. Do not submit
-a second download while another process is using that output directory.
+After the package fixes are pushed and the rule environment is created, submit
+from the repository root. The existing `scripts/download_blastdb.sbatch` now
+runs the complete `test_blast.csv` analysis in project `test_blast_branch`.
+Missing database or taxonomy resources are prepared first. Set your email in
+`config/config.yaml` and ensure adequate storage and network access. Do not
+submit overlapping jobs that write the same resources or project.
 
-Replace `YOUR_PARTITION` and `HH:MM:SS` below with an eligible Cheaha partition
-and a walltime based on the download size, observed transfer rate, and extraction
-time. The workflow's current 60-minute resource value is provisional, not a
-measured estimate for the full download.
+Replace `YOUR_PARTITION` and `HH:MM:SS` with your site's partition and a walltime
+that covers any resource preparation plus the test. Resource requests are
+provisional; a full RefSeq download previously exceeded two hours including
+extraction.
 
 ```bash
+mkdir -p logs
 sbatch --partition=YOUR_PARTITION --time=HH:MM:SS scripts/download_blastdb.sbatch
 ```
 
-Slurm returns a job ID and runs the job independently of your terminal session.
-The script loads `miniforge/conda`, activates the launcher environment, and
-runs Snakemake locally within one Slurm allocation, without submitting child
-jobs. One CPU matches the current single download worker. The 2 GB memory
-request is provisional, allowing 1 GB for the rule plus workflow overhead.
+The script loads `miniforge/conda`, activates the launcher, and runs Snakemake
+inside one Slurm allocation. One CPU matches the serial test. The provisional
+2 GB request includes the workflow process and one active rule.
 
-Monitor the job with `squeue -u "$USER"`. Scheduler output goes to
-`download-blastdb-JOB_ID.log` in the repository root; package output goes to
-`logs/download_blastdb.log`. After completion, replace `JOB_ID` below and inspect
-the exit status, elapsed time, and memory use:
+Monitor with `squeue -u "$USER"`. Scheduler output goes to
+`logs/test-blast-JOB_ID.log`; rule logs are under `logs/`. After completion,
+replace `JOB_ID` and inspect accounting before adjusting resources:
 
 ```bash
 seff JOB_ID
 sacct -j JOB_ID --format=JobID,State,ExitCode,Elapsed,AllocCPUS,MaxRSS
 ```
-
-Use successful runs to refine memory and walltime requests. Diagnose failed
-transfers separately from resource sizing. Download completion does not yet
-connect the database to the BLAST rule. See [Cheaha's batch submission guidance](https://docs.rc.uab.edu/cheaha/slurm/submitting_jobs/).
 
 #### Execute after integration validation
 
@@ -249,6 +244,31 @@ rule environment. The Conda YAML installs that branch directly. For local uv
 users, `uv lock --upgrade-package OrthoEvol` followed by `uv sync --locked`
 refreshes the branch revision after it is pushed. Until then, the lockfile
 records the older GitHub branch head, which lacks the new taxonomy API.
+
+From the repository root, activate the launcher and prepare the rule environment:
+
+```bash
+module load miniforge/conda
+eval "$(conda shell.bash hook)"
+conda activate orthoevol-snakemake
+export PYTHONNOUSERSITE=1
+export CONDA_CHANNEL_PRIORITY=strict
+snakemake --cores 1 --software-deployment-method conda --conda-create-envs-only
+```
+
+Inside a compute allocation, test the existing human ADRA1A query against mouse:
+
+```bash
+snakemake --dry-run --cores 1 \
+    --config project=test_blast_branch accessions_file=test_blast.csv
+snakemake --cores 1 --software-deployment-method conda --rerun-incomplete \
+    --config project=test_blast_branch accessions_file=test_blast.csv
+```
+
+The fresh project avoids XML cached by earlier package versions. Taxonomy is
+prepared at `resources/taxonomy/taxa.sqlite`; the existing downloaded BLAST
+volumes remain available. A fresh taxonomy build requires network access.
+Taxonomy memory and walltime values are provisional and need measurement.
 
 Check `test_blast_branch/data/test_blast_branch_MAF.csv` and the timing CSV.
 A missing mouse hit is a valid result; verify the human reference accession is

@@ -18,8 +18,9 @@ rule blastn:
         method=config["method"],
         save_data=config["save_data"],
         copy_from_package=config["copy_from_package"],
-        database_directory=lambda wildcards, input: str(
-            Path(input.database[0]).parent.resolve()
+        ref_species=config["ref_species"],
+        database_prefix=str(
+            (Path(config["database"]["directory"]) / config["database"]["name"]).resolve()
         )
     threads: 1
     resources:

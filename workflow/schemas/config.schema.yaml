@@ -1,7 +1,7 @@
 $schema: "https://json-schema.org/draft/2020-12/schema"
 type: object
 additionalProperties: false
-required: [project, email, accessions_file, method, copy_from_package, database, refseq, save_data, resources]
+required: [project, email, accessions_file, method, copy_from_package, ref_species, database, refseq, save_data, resources]
 properties:
   project:
     type: string
@@ -18,13 +18,19 @@ properties:
     type: boolean
   save_data:
     const: true
+  ref_species:
+    type: string
+    minLength: 1
   database:
     type: object
     additionalProperties: false
-    required: [mode, directory, files, download_workers]
+    required: [mode, name, directory, files, download_workers]
     properties:
       mode:
         enum: [download, existing]
+      name:
+        type: string
+        pattern: '^[A-Za-z0-9_.-]+$'
       directory:
         type: string
         minLength: 1
@@ -48,6 +54,16 @@ properties:
           properties:
             files:
               minItems: 1
+      - if:
+          properties:
+            mode:
+              const: download
+        then:
+          properties:
+            name:
+              const: refseq_rna
+            directory:
+              const: resources/blast/refseq_rna
   refseq:
     type: object
     additionalProperties: false

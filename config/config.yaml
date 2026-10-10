@@ -2,12 +2,14 @@ project: orthology
 email: researcher@example.org
 accessions_file: test.csv
 method: 1
+ref_species: Homo_sapiens
 copy_from_package: false
 save_data: true
 
 # A full RefSeq RNA download is large. Use an existing site database when possible.
 database:
   mode: download
+  name: refseq_rna
   directory: resources/blast/refseq_rna
   files: []
   download_workers: 1

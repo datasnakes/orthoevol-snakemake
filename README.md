@@ -3,8 +3,7 @@
 A Snakemake workflow for the [OrthoEvol](https://github.com/datasnakes/OrthoEvolution)
 Python package.
 
-The workflow is under development. Its default target is incomplete, and the
-existing rules still need integration with the pinned OrthoEvolution API.
+The workflow is under development and is testing the OrthoEvolution `snakemake-fixes` branch.
 The directory layout and Python dependency lock do not establish execution
 correctness.
 
@@ -54,7 +53,7 @@ Slurm account, partition, and submission limits belong in a site profile.
 
 Analysis dependencies belong in `workflow/envs/orthoevol.yaml`. The download
 and BLAST rules use this environment through `conda:` and `script:` directives.
-It supplies BLAST+ and the pinned OrthoEvolution package separately from the
+It supplies BLAST+ and the OrthoEvolution integration branch separately from the
 launcher. Run with `--software-deployment-method conda` to enable deployment.
 
 The existing `pyproject.toml` and `uv.lock` remain available for local Python
@@ -174,11 +173,11 @@ snakemake --cores 1 --software-deployment-method conda --conda-create-envs-only
 
 This downloads software and installs the rule environment. It does not retrieve
 reference databases. Stop and report the solver or pip error if installation
-fails. Successful launcher installation does not guarantee that the pinned
+fails. Successful launcher installation does not guarantee that the configured
 OrthoEvolution dependencies support this Linux system.
 
 The rule environment installs NumPy, SciPy, pandas, Matplotlib, Biopython, and
-other compiled dependencies through Conda before pip installs the pinned
+other compiled dependencies through Conda before pip installs the configured
 OrthoEvolution revision. Their constraints allow the solver to select compatible
 builds for the host; this specification is not a complete dependency lock.
 Strict channel priority applies to this shell and its child processes. Repeat
@@ -241,3 +240,18 @@ snakemake --cores 1 --software-deployment-method conda
 For scheduler submission, supply your configured site profile with `--profile`.
 Installing the Slurm plugin alone does not configure cluster execution. Do not
 launch production runs until representative integration validation passes.
+
+
+### Test the OrthoEvolution integration branch
+
+Push the package fixes to GitHub's `snakemake-fixes` branch before creating the
+rule environment. The Conda YAML installs that branch directly. For local uv
+users, `uv lock --upgrade-package OrthoEvol` followed by `uv sync --locked`
+refreshes the branch revision after it is pushed. Until then, the lockfile
+records the older GitHub branch head, which lacks the new taxonomy API.
+
+Snakemake hashes environment definitions, not the current GitHub branch head.
+Later pushes do not refresh an already-created Conda environment. Before each
+subsequent branch test, replace `@snakemake-fixes` in the rule YAML with the exact
+pushed commit SHA. Pin the validated SHA in both dependency specifications when
+branch testing is complete.

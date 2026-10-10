@@ -18,8 +18,8 @@ dev = ["pytest>=9,<10"]
 package = false
 
 [tool.uv.sources]
-# Pin the API inspected for this workflow rather than following a moving branch.
-OrthoEvol = { git = "https://github.com/datasnakes/OrthoEvolution.git", rev = "273ef54f9043d1fdeac6652497c58dfbc20a01dd" }
+# Follow the integration branch while testing; pin a validated commit afterwards.
+OrthoEvol = { git = "https://github.com/datasnakes/OrthoEvolution.git", branch = "snakemake-fixes" }
 
 [tool.pytest.ini_options]
 testpaths = [".tests"]

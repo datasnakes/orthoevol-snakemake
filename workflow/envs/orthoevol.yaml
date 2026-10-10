@@ -8,7 +8,7 @@ dependencies:
   - git=2.48
   - blast=2.16.0
   # Use Conda binaries instead of compiling PyPI sources on older HPC systems.
-  # Bounds match the pinned OrthoEvolution package where it specifies them.
+  # Bounds match the OrthoEvolution integration branch where it specifies them.
   - numpy
   - scipy
   - pandas>=0.25.3
@@ -20,4 +20,4 @@ dependencies:
   - pydantic-core
   - greenlet
   - pip:
-      - OrthoEvol @ git+https://github.com/datasnakes/OrthoEvolution.git@273ef54f9043d1fdeac6652497c58dfbc20a01dd
+      - OrthoEvol @ git+https://github.com/datasnakes/OrthoEvolution.git@snakemake-fixes
